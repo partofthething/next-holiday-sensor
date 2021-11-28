@@ -1,22 +1,23 @@
 # Next Holiday Sensor
 
-This sensor tells you what holiday is coming up next. You can use it
-to set holiday light colors or other scenes. 
+This sensor tells you what holiday is coming up next. You can use it to set holiday light
+colors or other scenes. 
 
-The state of the sensor tells you what the upcoming holiday is. There
-are sensor attributes showing all the holidays for the year. 
+The state of the sensor tells you what the upcoming holiday is. If today is a holiday, the
+state will be that holiday. There are sensor attributes showing all the holidays for the
+year, whether or not today is a holiday, and how many days there are before the next
+holiday. The component will look ahead into the next year for the next holiday.
 
-Holidays are recomputed every year. In the config you can specify
-what holidays you want to track. The holidays and config are based on
-the https://github.com/dr-prodigy/python-holidays
+Holidays are recomputed every year. In the config you can specify what holidays you want
+to track. The holidays and config are based on the
+https://github.com/dr-prodigy/python-holidays
 
 ![An example screenshot](screenshot.png)
 
 ## Configuration
 
-Configuration is set as a sensor of the `next_holiday` platform. 
-You make a list of `sources`, each of which can have
-the following attributes:
+Configuration is set as a sensor of the `next_holiday` platform.  You make a list of
+`sources`, each of which can have the following attributes:
 
 | Attribute   | Type  |  Description | Example|
 | --- | --- | --- | --- |

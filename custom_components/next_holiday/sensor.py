@@ -30,7 +30,7 @@ CONF_MULTIDAY = "multiday"
 CONF_FILTER = "filter"
 
 ATTR_HOLIDAYS = "holidays"
-ATTR_IS_HOLIDAY = "current_holiday"
+ATTR_IS_HOLIDAY = "today_is_holiday"
 ATTR_COUNTDOWN_TO_HOLIDAY = "days_until_next_holiday"
 
 ICON = "mdi:balloon"
