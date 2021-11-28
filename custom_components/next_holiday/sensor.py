@@ -16,6 +16,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.components.sensor import (
     PLATFORM_SCHEMA,
 )
+from homeassistant.util import Throttle
 
 import holidays
 
@@ -34,7 +35,7 @@ ATTR_COUNTDOWN_TO_HOLIDAY = "days_until_next_holiday"
 
 ICON = "mdi:balloon"
 
-# MIN_TIME_BETWEEN_UPDATES = datetime.timedelta(minutes=1)
+MIN_TIME_BETWEEN_UPDATES = datetime.timedelta(minutes=1)
 
 
 ENTRY_SCHEMA = vol.Schema(
@@ -84,6 +85,7 @@ class NextHolidaySensor(SensorEntity):
         """Return the state of the sensor."""
         return self._state
 
+    @Throttle(MIN_TIME_BETWEEN_UPDATES)
     def update(self) -> None:
         """Update the next holiday based on current date."""
         today = datetime.date.today()
@@ -107,15 +109,17 @@ class NextHolidaySensor(SensorEntity):
 
     @property
     def extra_state_attributes(self):
+        """Add extra attrs."""
         return self._attrs
 
     @property
     def icon(self):
+        """Set custom icon."""
         return ICON
 
 
 def _find_next_holiday(today, holiday_data) -> datetime.date:
-    """Find the next holiday"""
+    """Find the next (or current) holiday"""
     for holiday_date in sorted(holiday_data):
         if holiday_date >= today:
             next_holiday = holiday_date

@@ -14,6 +14,28 @@ the https://github.com/dr-prodigy/python-holidays
 
 ## Configuration
 
+Configuration is set as a sensor of the `next_holiday` platform. 
+You make a list of `sources`, each of which can have
+the following attributes:
+
+| Attribute   | Type  |  Description | Example|
+| --- | --- | --- | --- |
+| country| str | A country to load holidays from | `'USA'`
+| state | str | A state within the country for state holidays | `'WA'`
+| province | str | A province within the country for state holidays | `'ON'` 
+| multiday | bool | If true (default), holidays that span multiple days will be shown mulitiple times. Otherwise, only the first day will be shown| `true` 
+| observed | bool | If true (default), observed holidays will be included in addition to real ones| `true` 
+| filter | list of str | A filter where only holidays matching the query will be added| [See below] 
+
+Multiple country/state/provinces and filters may be combined to get a pretty flexible
+list of holidays.
+
+Lists of valid states and province abbreviations can be found 
+in the underlying library, e.g. [here for
+Canada](https://github.com/dr-prodigy/python-holidays/blob/master/holidays/countries/canada.py)
+
+### Example
+
 Add a sensor to your configuration along the lines of:
 
     sensor:
@@ -27,4 +49,5 @@ Add a sensor to your configuration along the lines of:
              - 'hanukkah'
 
 This loads all normal holidays for the US State of Washington and also
-throws in Hanukkah by loading the Israel holidays. 
+throws in Hanukkah by loading the Israel holidays and filtering everything
+but Hanukkah out.
