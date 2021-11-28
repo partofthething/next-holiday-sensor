@@ -28,7 +28,7 @@ CONF_OBSERVED = "observed"
 CONF_MULTIDAY = "multiday"
 CONF_FILTER = "filter"
 
-ICON = "mdi:sun"
+ICON = "mdi:balloon"
 
 MIN_TIME_BETWEEN_UPDATES = datetime.timedelta(minutes=1)
 
@@ -93,6 +93,10 @@ class NextHolidaySensor(SensorEntity):
     @property
     def extra_state_attributes(self):
         return self._holidays
+
+    @property
+    def icon(self):
+        return ICON
 
 
 def _find_next_holiday(today: datetime.date, config: dict) -> str:
