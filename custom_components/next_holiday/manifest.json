@@ -1,0 +1,10 @@
+{
+  "domain": "sensor",
+  "name": "next_holiday",
+  "documentation": "",
+  "dependencies": [],
+  "codeowners": [],
+  "requirements": ["holidays"],
+  "iot_class": "local_polling",
+  "version": "0.1.0"
+}
