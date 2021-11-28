@@ -1,6 +1,6 @@
 {
-  "domain": "sensor",
-  "name": "next_holiday",
+  "domain": "next_holiday",
+  "name": "Next Holiday Sensor",
   "documentation": "",
   "dependencies": [],
   "codeowners": [],
