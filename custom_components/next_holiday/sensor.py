@@ -28,9 +28,13 @@ CONF_OBSERVED = "observed"
 CONF_MULTIDAY = "multiday"
 CONF_FILTER = "filter"
 
+ATTR_HOLIDAYS = "holidays"
+ATTR_IS_HOLIDAY = "current_holiday"
+ATTR_COUNTDOWN_TO_HOLIDAY = "days_until_next_holiday"
+
 ICON = "mdi:balloon"
 
-MIN_TIME_BETWEEN_UPDATES = datetime.timedelta(minutes=1)
+# MIN_TIME_BETWEEN_UPDATES = datetime.timedelta(minutes=1)
 
 
 ENTRY_SCHEMA = vol.Schema(
@@ -40,19 +44,13 @@ ENTRY_SCHEMA = vol.Schema(
         vol.Optional(CONF_PROVINCE, default=None): vol.Any(None, cv.string),
         vol.Optional(CONF_OBSERVED, default=True): cv.boolean,
         vol.Optional(CONF_MULTIDAY, default=True): cv.boolean,
-        vol.Optional(CONF_FILTER, default=[""]): vol.All(
-            cv.ensure_list, [cv.string]
-        )
+        vol.Optional(CONF_FILTER, default=[""]): vol.All(cv.ensure_list, [cv.string]),
     }
 )
 
 # Validation of the user's configuration
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
-  {
-      vol.Required(CONF_SOURCES): vol.All(
-          cv.ensure_list, [ENTRY_SCHEMA]
-      )
-  }
+    {vol.Required(CONF_SOURCES): vol.All(cv.ensure_list, [ENTRY_SCHEMA])}
 )
 
 
@@ -60,7 +58,7 @@ def setup_platform(
     hass: HomeAssistant,
     config: ConfigType,
     add_entities: AddEntitiesCallback,
-    discovery_info: DiscoveryInfoType | None = None
+    discovery_info: DiscoveryInfoType | None = None,
 ) -> None:
     """Set up the sensor platform."""
     add_entities([NextHolidaySensor(config)])
@@ -74,11 +72,12 @@ class NextHolidaySensor(SensorEntity):
         self._state = None
         self._holidays = dict()
         self._config = config
+        self._attrs = {}
 
     @property
     def name(self) -> str:
         """Return the name of the sensor."""
-        return 'Next Holiday'
+        return "Next Holiday"
 
     @property
     def state(self):
@@ -88,32 +87,46 @@ class NextHolidaySensor(SensorEntity):
     def update(self) -> None:
         """Update the next holiday based on current date."""
         today = datetime.date.today()
-        self._state, self._holidays = _find_next_holiday(today, self._config)
+        holiday_data = _load_holidays(today.year, self._config)
+        next_holiday_date = _find_next_holiday(today, holiday_data)
+        if next_holiday_date is None:
+            # lookahead into the next year
+            holiday_data.update(_load_holidays(today.year + 1, self._config))
+            next_holiday_date = _find_next_holiday(today, holiday_data)
+
+        self._state = holiday_data.get(next_holiday_date)
+
+        self._attrs[ATTR_HOLIDAYS] = {
+            dt.isoformat(): val for dt, val in sorted(holiday_data.items())
+        }
+        self._attrs[ATTR_IS_HOLIDAY] = today in holiday_data
+        if next_holiday_date:
+            self._attrs[ATTR_COUNTDOWN_TO_HOLIDAY] = (next_holiday_date - today).days
+        else:
+            self._attrs[ATTR_COUNTDOWN_TO_HOLIDAY] = None
 
     @property
     def extra_state_attributes(self):
-        return self._holidays
+        return self._attrs
 
     @property
     def icon(self):
         return ICON
 
 
-def _find_next_holiday(today: datetime.date, config: dict) -> str:
+def _find_next_holiday(today, holiday_data) -> datetime.date:
     """Find the next holiday"""
-    options = _load_holidays(today.year, config)
-    for holiday_date, holiday_name in sorted(options.items()):
+    for holiday_date in sorted(holiday_data):
         if holiday_date >= today:
-            next_holiday = holiday_name
+            next_holiday = holiday_date
             break
     else:
-        next_holiday = "none"
+        next_holiday = None
 
-    attrs = {str(dt):val for dt, val in sorted(options.items())}
+    return next_holiday
 
-    return next_holiday, attrs
 
-def _load_holidays(year, config):
+def _load_holidays(year: int, config: dict) -> holidays.HolidayBase:
     """Load holiday data based on config and year.
 
     We re-instantiate this at each update so it keeps working as
@@ -126,7 +139,7 @@ def _load_holidays(year, config):
             state=entry.get(CONF_STATE),
             prov=entry.get(CONF_PROVINCE),
             observed=entry.get(CONF_OBSERVED),
-            years=year
+            years=year,
         )
         for query in entry.get(CONF_FILTER):
             # allow text filter (default to add all)
@@ -136,8 +149,3 @@ def _load_holidays(year, config):
                     options[date] = holiday_name
 
     return options
-
-
-
-
-
