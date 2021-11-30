@@ -1,5 +1,7 @@
 # Next Holiday Sensor
 
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/partofthething/next-holiday-sensor)
+
 This sensor tells you what holiday is coming up next. You can use it to set holiday light
 colors or other scenes. 
 

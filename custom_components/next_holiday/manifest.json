@@ -1,9 +1,9 @@
 {
   "domain": "next_holiday",
   "name": "Next Holiday Sensor",
-  "documentation": "",
+  "documentation": "https://github.com/partofthething/next-holiday-sensor",
   "dependencies": [],
-  "codeowners": [],
+  "codeowners": ["@partofthething"],
   "requirements": ["holidays"],
   "iot_class": "local_polling",
   "version": "0.1.0"
