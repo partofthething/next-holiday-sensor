@@ -27,9 +27,10 @@ Configuration is set as a sensor of the `next_holiday` platform.  You make a lis
 | state | str | A state within the country for state holidays | `'WA'`
 | province | str | A province within the country for state holidays | `'ON'` 
 | multiday | bool | If true (default), holidays that span multiple days will be shown mulitiple times. Otherwise, only the first day will be shown| `true` 
-| observed | bool | If true (default), observed holidays will be included in addition to real ones| `true` 
+| observed | bool | If true (default), observed holidays will be included in addition to real ones| `true`
 | filter | list of str | A filter where only holidays matching the query will be added| [See below] 
-| kwargs | dict | A dict of key/value pairs that will be passed on to the underlying library. This can be used to activate special behavior for certain countries (like turning off Sundays for Norway)| [See below] 
+| exclude | list of str | An exclusion filter where holiday names that match an entry will be ignored | [Same as for filter]
+| kwargs | dict | A dict of key/value pairs that will be passed on to the underlying library. This can be used to activate special behavior for certain countries (like turning off Sundays for Norway)| [See below]
 
 Multiple country/state/provinces and filters may be combined to get a pretty flexible
 list of holidays.
@@ -47,10 +48,12 @@ Add a sensor to your configuration along the lines of:
         sources: 
          - country: "USA"
            state: "WA"
+           exclude:
+             - "washington's birthday"
          - country: "Israel"
            multiday: false
            filter:
-             - 'hanukkah'
+             - "hanukkah"
          - country: "Norway"
            kwargs:
              include_sundays: false

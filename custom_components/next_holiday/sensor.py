@@ -29,6 +29,7 @@ CONF_OBSERVED = "observed"
 CONF_MULTIDAY = "multiday"
 CONF_FILTER = "filter"
 CONF_KWARGS = "kwargs"
+CONF_EXCLUDE = "exclude"
 
 ATTR_HOLIDAYS = "holidays"
 ATTR_IS_HOLIDAY = "today_is_holiday"
@@ -49,6 +50,7 @@ ENTRY_SCHEMA = vol.Schema(
         vol.Optional(CONF_MULTIDAY, default=True): cv.boolean,
         vol.Optional(CONF_FILTER, default=[""]): vol.All(cv.ensure_list, [cv.string]),
         vol.Optional(CONF_KWARGS, default=dict()): KWARGS_SCHEMA,
+        vol.Optional(CONF_EXCLUDE, default=[""]): vol.All(cv.ensure_list, [cv.string]),
     }
 )
 
@@ -149,10 +151,13 @@ def _load_holidays(year: int, config: dict) -> holidays.HolidayBase:
             years=year,
             **entry.get(CONF_KWARGS)
         )
+        exclude = [exclusion.lower() for exclusion in entry.get(CONF_EXCLUDE)]
         for query in entry.get(CONF_FILTER):
             # allow text filter (default to add all)
             for date in sorted(candidates.get_named(query)):
                 holiday_name = candidates[date]
+                if holiday_name.lower() in exclude:
+                    continue
                 if entry.get(CONF_MULTIDAY) or (holiday_name not in options.values()):
                     options[date] = holiday_name
 
