@@ -28,6 +28,7 @@ CONF_PROVINCE = "province"
 CONF_OBSERVED = "observed"
 CONF_MULTIDAY = "multiday"
 CONF_FILTER = "filter"
+CONF_KWARGS = "kwargs"
 
 ATTR_HOLIDAYS = "holidays"
 ATTR_IS_HOLIDAY = "today_is_holiday"
@@ -37,6 +38,7 @@ ICON = "mdi:balloon"
 
 MIN_TIME_BETWEEN_UPDATES = datetime.timedelta(minutes=1)
 
+KWARGS_SCHEMA = vol.Schema({vol.Optional(str): vol.Any(cv.boolean, float, cv.string)})
 
 ENTRY_SCHEMA = vol.Schema(
     {
@@ -46,6 +48,7 @@ ENTRY_SCHEMA = vol.Schema(
         vol.Optional(CONF_OBSERVED, default=True): cv.boolean,
         vol.Optional(CONF_MULTIDAY, default=True): cv.boolean,
         vol.Optional(CONF_FILTER, default=[""]): vol.All(cv.ensure_list, [cv.string]),
+        vol.Optional(CONF_KWARGS, default=dict()): KWARGS_SCHEMA,
     }
 )
 
@@ -138,12 +141,13 @@ def _load_holidays(year: int, config: dict) -> holidays.HolidayBase:
 
     options = holidays.HolidayBase()
     for entry in config.get(CONF_SOURCES):
-        candidates = holidays.CountryHoliday(
-            country=entry.get(CONF_COUNTRY),
+        CountryCls = getattr(holidays, entry.get(CONF_COUNTRY))
+        candidates = CountryCls(
             state=entry.get(CONF_STATE),
             prov=entry.get(CONF_PROVINCE),
             observed=entry.get(CONF_OBSERVED),
             years=year,
+            **entry.get(CONF_KWARGS)
         )
         for query in entry.get(CONF_FILTER):
             # allow text filter (default to add all)
