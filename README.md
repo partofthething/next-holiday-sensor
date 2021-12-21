@@ -49,9 +49,9 @@ There are also global configuration settings that you can specify, including:
 
 Add a sensor to your configuration along the lines of:
 
-    min_future_holidays: 3
     sensor:
       - platform: next_holiday
+        min_future_holidays: 3
         sources: 
          - country: "USA"
            state: "WA"
