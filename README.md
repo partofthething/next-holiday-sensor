@@ -43,8 +43,7 @@ There are also global configuration settings that you can specify, including:
 
 | Attribute   | Type  |  Description | Example|
 | --- | --- | --- | --- |
-| min\_future\_holidays| int | The minimum number of future holidays before the system looks ahead
-into the next year| `3`
+| min\_future\_holidays| int | The minimum number of future holidays before the system looks ahead into the next year| `3`
 
 ### Example
 
