@@ -39,10 +39,18 @@ Lists of valid states and province abbreviations can be found
 in the underlying library, e.g. [here for
 Canada](https://github.com/dr-prodigy/python-holidays/blob/master/holidays/countries/canada.py)
 
+There are also global configuration settings that you can specify, including:
+
+| Attribute   | Type  |  Description | Example|
+| --- | --- | --- | --- |
+| min\_future\_holidays| int | The minimum number of future holidays before the system looks ahead
+into the next year| `3`
+
 ### Example
 
 Add a sensor to your configuration along the lines of:
 
+    min_future_holidays: 3
     sensor:
       - platform: next_holiday
         sources: 
