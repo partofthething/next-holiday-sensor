@@ -31,6 +31,7 @@ CONF_FILTER = "filter"
 CONF_KWARGS = "kwargs"
 CONF_EXCLUDE = "exclude"
 CONF_MIN_HOLIDAYS = "min_future_holidays"
+CONF_CUSTOM_HOLIDAYS = "custom_holidays"
 
 ATTR_HOLIDAYS = "holidays"
 ATTR_IS_HOLIDAY = "today_is_holiday"
@@ -41,6 +42,7 @@ ICON = "mdi:balloon"
 MIN_TIME_BETWEEN_UPDATES = datetime.timedelta(minutes=1)
 
 KWARGS_SCHEMA = vol.Schema({vol.Optional(str): vol.Any(cv.boolean, float, cv.string)})
+CUSTOM_DATE_SCHEMA = vol.Schema({vol.Optional(str): cv.string})
 
 ENTRY_SCHEMA = vol.Schema(
     {
@@ -60,6 +62,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_SOURCES): vol.All(cv.ensure_list, [ENTRY_SCHEMA]),
         vol.Optional(CONF_MIN_HOLIDAYS, default=0): vol.All(int, vol.Range(min=0)),
+        vol.Optional(CONF_CUSTOM_HOLIDAYS, default=dict()): CUSTOM_DATE_SCHEMA,
     }
 )
 
@@ -173,5 +176,12 @@ def _load_holidays(year: int, config: dict) -> holidays.HolidayBase:
                     continue
                 if entry.get(CONF_MULTIDAY) or (holiday_name not in options.values()):
                     options[date] = holiday_name
+
+    custom = config.get(CONF_CUSTOM_HOLIDAYS)
+    if custom:
+        for date_str, holiday_name in custom.items():
+            mo, day = date_str.split("-")
+            date = datetime.date(year, int(mo), int(day))
+            options[date] = holiday_name
 
     return options

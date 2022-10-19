@@ -44,6 +44,7 @@ There are also global configuration settings that you can specify, including:
 | Attribute   | Type  |  Description | Example|
 | --- | --- | --- | --- |
 | min\_future\_holidays| int | The minimum number of future holidays before the system looks ahead into the next year| `3`
+| custom\_holidays | dict | Additional month/day:holiday combos to add | `{}`
 
 ### Example
 
@@ -52,6 +53,8 @@ Add a sensor to your configuration along the lines of:
     sensor:
       - platform: next_holiday
         min_future_holidays: 3
+        custom_holidays:
+            "10-31": "Halloween"
         sources: 
          - country: "USA"
            state: "WA"
@@ -67,7 +70,8 @@ Add a sensor to your configuration along the lines of:
 
 This loads all normal holidays for the US State of Washington and also
 throws in Hanukkah by loading the Israel holidays and filtering everything
-but Hanukkah out.
+but Hanukkah out. It also adds Halloween on Oct 31 of the year (which isn't
+really a national holiday anywhere).
 
 Norwegian holidays are added as well. But because Norway considers every Sunday
 a holiday, we pass the special `include_holidays` flag down to the underlying 
