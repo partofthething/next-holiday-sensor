@@ -36,6 +36,7 @@ CONF_CUSTOM_HOLIDAYS = "custom_holidays"
 ATTR_HOLIDAYS = "holidays"
 ATTR_IS_HOLIDAY = "today_is_holiday"
 ATTR_COUNTDOWN_TO_HOLIDAY = "days_until_next_holiday"
+ATTR_NEXT_HOLIDAY_FUTURE = "next_holiday_future"
 
 ICON = "mdi:balloon"
 
@@ -120,6 +121,9 @@ class NextHolidaySensor(SensorEntity):
             self._attrs[ATTR_COUNTDOWN_TO_HOLIDAY] = (next_holiday_date - today).days
         else:
             self._attrs[ATTR_COUNTDOWN_TO_HOLIDAY] = None
+
+        next_holiday_date_future = _find_next_holiday(_find_holidays_on_or_after(today + datetime.timedelta(days=1), holiday_data))
+        self._attrs[ATTR_NEXT_HOLIDAY_FUTURE] = { "date": next_holiday_date_future, "holiday": holiday_data[next_holiday_date_future], "countdown": (next_holiday_date_future - today).days }
 
     @property
     def extra_state_attributes(self):
