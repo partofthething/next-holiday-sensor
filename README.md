@@ -35,6 +35,11 @@ Configuration is set as a sensor of the `next_holiday` platform.  You make a lis
 Multiple country/state/provinces and filters may be combined to get a pretty flexible
 list of holidays.
 
+See [this list of countries and languages that are
+supported](https://python-holidays.readthedocs.io/en/latest/#available-countries). You can
+set language using the `kwargs` configuration with a `language` key, as demonstrated in
+the examples below for Norwegian.
+
 Lists of valid states and province abbreviations can be found 
 in the underlying library, e.g. [here for
 Canada](https://github.com/dr-prodigy/python-holidays/blob/master/holidays/countries/canada.py)
@@ -67,6 +72,7 @@ Add a sensor to your configuration along the lines of:
          - country: "Norway"
            kwargs:
              include_sundays: false
+             language: 'no'
 
 This loads all normal holidays for the US State of Washington and also
 throws in Hanukkah by loading the Israel holidays and filtering everything
